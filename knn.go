@@ -4,18 +4,18 @@ import (
 	"sync"
 )
 
-// KNN struct
+//KNN struct
 type KNN struct {
 	*base
 }
 
-// New creates a new classifier
+//New creates a new classifier
 func New(k int, x matrix, y vector, d distanceFunction) *KNN {
 	return &KNN{newKNN(k, x, y, d)}
 }
 
-// PredictProba calculates probabilities for each row
-// to be in nearests neighboors labels
+//PredictProba calculates probabilities for each row
+//to be in nearests neighboors labels
 func (knn *KNN) PredictProba(x matrix) vector {
 	wg := sync.WaitGroup{}
 	ret := make(vector, len(x))
@@ -31,8 +31,8 @@ func (knn *KNN) PredictProba(x matrix) vector {
 	return ret
 }
 
-// Predict calculates the value for each row
-// from nearests neighboors
+//Predict calculates the value for each row
+//from nearests neighboors
 func (knn *KNN) Predict(x matrix) vector {
 	wg := sync.WaitGroup{}
 	ret := make(vector, len(x))

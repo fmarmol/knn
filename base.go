@@ -36,43 +36,43 @@ type Class struct {
 	Proba float64 //Probability to be in this class
 }
 
-type Classes []Class
+type classes []Class
 
 // Len returns the number of classes
-func (c Classes) Len() int {
+func (c classes) Len() int {
 	return len(c)
 }
 
 // Less to implement sort interface
-func (c Classes) Less(i, j int) bool {
+func (c classes) Less(i, j int) bool {
 	return c[i].Proba > c[j].Proba
 }
 
 // Swap to implement sort interface
-func (c Classes) Swap(i, j int) {
+func (c classes) Swap(i, j int) {
 	c[i], c[j] = c[j], c[i]
 }
 
-type Neighboors []Neighboor
+type neighboors []Neighboor
 
 // Len returns the number of neighboors
-func (n Neighboors) Len() int {
+func (n neighboors) Len() int {
 	return len(n)
 }
 
 // Less to implement sort interface
-func (n Neighboors) Less(i, j int) bool {
+func (n neighboors) Less(i, j int) bool {
 	return n[i].Distance < n[j].Distance
 }
 
 // Swap to implement sort interface
-func (n Neighboors) Swap(i, j int) {
+func (n neighboors) Swap(i, j int) {
 	n[i], n[j] = n[j], n[i]
 }
 
 // predictProba
-func (nns Neighboors) predictProba() (float64, Classes) {
-	classes := Classes{}
+func (nns neighboors) predictProba() (float64, classes) {
+	cls := classes{}
 	labels_classes := map[float64]float64{}
 	wtot := 0.0
 	for i := range nns {
@@ -89,14 +89,14 @@ func (nns Neighboors) predictProba() (float64, Classes) {
 		wtot += w
 	}
 	for k, v := range labels_classes {
-		classes = append(classes, Class{C: k, Proba: v / wtot})
+		cls = append(cls, Class{C: k, Proba: v / wtot})
 	}
-	sort.Sort(classes)
-	return classes[0].C, classes
+	sort.Sort(cls)
+	return cls[0].C, cls
 }
 
 // Predict
-func (nns Neighboors) predict() float64 {
+func (nns neighboors) predict() float64 {
 	wtot := 0.0
 	ret := 0.0
 	for i := range nns {
@@ -120,8 +120,8 @@ func newKNN(k int, x matrix, y vector, d distanceFunction) *base {
 }
 
 // NNeighboors returns the k nearests neighboors
-func (b *base) nearestNeighboors(x vector) Neighboors {
-	ret := make(Neighboors, len(b.X))
+func (b *base) nearestNeighboors(x vector) neighboors {
+	ret := make(neighboors, len(b.X))
 	for i := range b.X {
 		d, err := distance(x, b.X[i], b.Distance)
 		if err != nil {
