@@ -4,29 +4,25 @@ import (
 	"sync"
 )
 
-type KNNClassifier struct {
-	*BaseKNN
+// KNN struct
+type KNN struct {
+	*base
 }
 
-func NewKNNClassifier(k int, x [][]float64, y []float64, d DistanceFunction) *KNNClassifier {
-	return &KNNClassifier{NewKNN(k, x, y, d)}
+// New creates a new classifier
+func New(k int, x matrix, y vector, d distanceFunction) *KNN {
+	return &KNN{newKNN(k, x, y, d)}
 }
 
-type KNNRegressor struct {
-	*BaseKNN
-}
-
-func NewKNNRegressor(k int, x [][]float64, y []float64, d DistanceFunction) *KNNRegressor {
-	return &KNNRegressor{NewKNN(k, x, y, d)}
-}
-
-func (k *KNNClassifier) Predict(x [][]float64) []float64 {
+// PredictProba calculates probabilities for each row
+// to be in nearests neighboors labels
+func (knn *KNN) PredictProba(x matrix) vector {
 	wg := sync.WaitGroup{}
-	ret := make([]float64, len(x))
+	ret := make(vector, len(x))
 	wg.Add(len(x))
 	for i, xx := range x {
 		go func(index int, l []float64) {
-			c, _ := k.NNeighboors(l).PredictProba()
+			c, _ := knn.nearestNeighboors(l).predictProba()
 			ret[index] = c
 			wg.Done()
 		}(i, xx)
@@ -35,13 +31,15 @@ func (k *KNNClassifier) Predict(x [][]float64) []float64 {
 	return ret
 }
 
-func (k *KNNRegressor) Predict(x [][]float64) []float64 {
+// Predict calculates the value for each row
+// from nearests neighboors
+func (knn *KNN) Predict(x matrix) vector {
 	wg := sync.WaitGroup{}
-	ret := make([]float64, len(x))
+	ret := make(vector, len(x))
 	wg.Add(len(x))
 	for i, xx := range x {
 		go func(index int, l []float64) {
-			c := k.NNeighboors(l).Predict()
+			c := knn.nearestNeighboors(l).predict()
 			ret[index] = c
 			wg.Done()
 		}(i, xx)

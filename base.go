@@ -6,20 +6,28 @@ import (
 	"sort"
 )
 
-type DistanceFunction func([]float64, []float64) float64
+// vector is a vector of float64
+type vector = []float64
 
-type BaseKNN struct {
+// matrix is an alias for [][]float64
+type matrix = []vector
+
+// distanceFunction is an alias
+type distanceFunction = func(vector, vector) float64
+
+// Base struct
+type base struct {
 	K        int
-	X        [][]float64
-	Y        []float64
-	Distance DistanceFunction
+	X        matrix           // X matrix of features
+	Y        vector           // y vector of value or labels
+	Distance distanceFunction // distance function used
 }
 
 //Neighboor struct with Label Y and it's Index in Training and Distance with a point
-type NN struct {
-	Index    int
-	Distance float64
-	Y        float64
+type Neighboor struct {
+	Index    int     // index in X matrix
+	Distance float64 // distance from a row
+	Y        float64 // value or label
 }
 
 //Struct of Class for a KNN classifier
@@ -30,39 +38,40 @@ type Class struct {
 
 type Classes []Class
 
-//START SORT []Class
+// Len returns the number of classes
 func (c Classes) Len() int {
 	return len(c)
 }
 
+// Less to implement sort interface
 func (c Classes) Less(i, j int) bool {
 	return c[i].Proba > c[j].Proba
 }
 
+// Swap to implement sort interface
 func (c Classes) Swap(i, j int) {
 	c[i], c[j] = c[j], c[i]
 }
 
-//END SORT []Class
+type Neighboors []Neighboor
 
-//START SORT []NN
-type NNs []NN
-
-func (n NNs) Len() int {
+// Len returns the number of neighboors
+func (n Neighboors) Len() int {
 	return len(n)
 }
 
-func (n NNs) Less(i, j int) bool {
+// Less to implement sort interface
+func (n Neighboors) Less(i, j int) bool {
 	return n[i].Distance < n[j].Distance
 }
 
-func (n NNs) Swap(i, j int) {
+// Swap to implement sort interface
+func (n Neighboors) Swap(i, j int) {
 	n[i], n[j] = n[j], n[i]
 }
 
-//END SORT []NN
-
-func (nns NNs) PredictProba() (float64, Classes) {
+// predictProba
+func (nns Neighboors) predictProba() (float64, Classes) {
 	classes := Classes{}
 	labels_classes := map[float64]float64{}
 	wtot := 0.0
@@ -86,7 +95,8 @@ func (nns NNs) PredictProba() (float64, Classes) {
 	return classes[0].C, classes
 }
 
-func (nns NNs) Predict() float64 {
+// Predict
+func (nns Neighboors) predict() float64 {
 	wtot := 0.0
 	ret := 0.0
 	for i := range nns {
@@ -101,27 +111,30 @@ func (nns NNs) Predict() float64 {
 	return ret
 }
 
-func NewKNN(k int, x [][]float64, y []float64, d DistanceFunction) *BaseKNN {
+// NewKNN creates a new base knn
+func newKNN(k int, x matrix, y vector, d distanceFunction) *base {
 	if k > len(x) {
 		panic("error k")
 	}
-	return &BaseKNN{K: k, X: x, Y: y, Distance: d}
+	return &base{K: k, X: x, Y: y, Distance: d}
 }
 
-func (k *BaseKNN) NNeighboors(x []float64) NNs {
-	ret := make(NNs, len(k.X))
-	for i := range k.X {
-		d, err := distance(x, k.X[i], k.Distance)
+// NNeighboors returns the k nearests neighboors
+func (b *base) nearestNeighboors(x vector) Neighboors {
+	ret := make(Neighboors, len(b.X))
+	for i := range b.X {
+		d, err := distance(x, b.X[i], b.Distance)
 		if err != nil {
 			panic(err)
 		}
-		ret[i] = NN{Index: i, Distance: d, Y: k.Y[i]}
+		ret[i] = Neighboor{Index: i, Distance: d, Y: b.Y[i]}
 	}
 	sort.Sort(ret)
-	return ret[:k.K]
+	return ret[:b.K]
 }
 
-func Euclidian(x1 []float64, x2 []float64) float64 {
+// Euclidian calculate the euclidian distance
+func Euclidian(x1, x2 vector) float64 {
 	sum := 0.0
 	for i := range x1 {
 		sum += (x1[i] - x2[i]) * (x1[i] - x2[i])
@@ -129,7 +142,8 @@ func Euclidian(x1 []float64, x2 []float64) float64 {
 	return math.Sqrt(sum)
 }
 
-func distance(x1 []float64, x2 []float64, f DistanceFunction) (float64, error) {
+// distance apply a distanceFunction on two vectors
+func distance(x1 vector, x2 vector, f distanceFunction) (float64, error) {
 	if x1 == nil {
 		return -1, fmt.Errorf("x1 is nil")
 	}
