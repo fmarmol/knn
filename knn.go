@@ -22,7 +22,7 @@ func (knn *KNN) PredictProba(x matrix) vector {
 	wg.Add(len(x))
 	for i, xx := range x {
 		go func(index int, l []float64) {
-			c, _ := knn.nearestNeighboors(l).predictProba()
+			c, _ := knn.nearestNeighbors(l).predictProba()
 			ret[index] = c
 			wg.Done()
 		}(i, xx)
@@ -39,7 +39,7 @@ func (knn *KNN) Predict(x matrix) vector {
 	wg.Add(len(x))
 	for i, xx := range x {
 		go func(index int, l []float64) {
-			c := knn.nearestNeighboors(l).predict()
+			c := knn.nearestNeighbors(l).predict()
 			ret[index] = c
 			wg.Done()
 		}(i, xx)
