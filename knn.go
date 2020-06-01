@@ -10,15 +10,15 @@ type KNN struct {
 }
 
 //New creates a new classifier
-func New(k int, x matrix, y vector, d distanceFunction) *KNN {
+func New(k int, x Matrix, y Vector, d DistanceFunction) *KNN {
 	return &KNN{newKNN(k, x, y, d)}
 }
 
 //PredictProba calculates probabilities for each row
 //to be in nearests neighboors labels
-func (knn *KNN) PredictProba(x matrix) vector {
+func (knn *KNN) PredictProba(x Matrix) Vector {
 	wg := sync.WaitGroup{}
-	ret := make(vector, len(x))
+	ret := make(Vector, len(x))
 	wg.Add(len(x))
 	for i, xx := range x {
 		go func(index int, l []float64) {
@@ -33,9 +33,9 @@ func (knn *KNN) PredictProba(x matrix) vector {
 
 //Predict calculates the value for each row
 //from nearests neighboors
-func (knn *KNN) Predict(x matrix) vector {
+func (knn *KNN) Predict(x Matrix) Vector {
 	wg := sync.WaitGroup{}
-	ret := make(vector, len(x))
+	ret := make(Vector, len(x))
 	wg.Add(len(x))
 	for i, xx := range x {
 		go func(index int, l []float64) {

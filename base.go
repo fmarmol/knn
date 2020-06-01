@@ -6,21 +6,21 @@ import (
 	"sort"
 )
 
-// vector is a vector of float64
-type vector = []float64
+// Vector is a Vector of float64
+type Vector = []float64
 
-// matrix is an alias for [][]float64
-type matrix = []vector
+// Matrix is an alias for [][]float64
+type Matrix = []Vector
 
-// distanceFunction is an alias
-type distanceFunction = func(vector, vector) float64
+// DistanceFunction is an alias
+type DistanceFunction = func(Vector, Vector) float64
 
 // Base struct
 type base struct {
 	K        int              // number of nieghbors
-	X        matrix           // X matrix of features
-	Y        vector           // y vector of value or labels
-	Distance distanceFunction // distance function used
+	X        Matrix           // X matrix of features
+	Y        Vector           // y vector of value or labels
+	Distance DistanceFunction // distance function used
 }
 
 // Class for a KNN classifier
@@ -112,7 +112,7 @@ func (nns neighbors) predict() float64 {
 }
 
 // NewKNN creates a new base knn
-func newKNN(k int, x matrix, y vector, d distanceFunction) *base {
+func newKNN(k int, x Matrix, y Vector, d DistanceFunction) *base {
 	if k > len(x) {
 		panic("error k")
 	}
@@ -120,7 +120,7 @@ func newKNN(k int, x matrix, y vector, d distanceFunction) *base {
 }
 
 // NNeighbors returns the k nearests neighboors
-func (b *base) nearestNeighbors(x vector) neighbors {
+func (b *base) nearestNeighbors(x Vector) neighbors {
 	ret := make(neighbors, len(b.X))
 	for i := range b.X {
 		d, err := distance(x, b.X[i], b.Distance)
@@ -134,7 +134,7 @@ func (b *base) nearestNeighbors(x vector) neighbors {
 }
 
 // Euclidian calculate the euclidian distance
-func Euclidian(x1, x2 vector) float64 {
+func Euclidian(x1, x2 Vector) float64 {
 	sum := 0.0
 	for i := range x1 {
 		sum += (x1[i] - x2[i]) * (x1[i] - x2[i])
@@ -143,7 +143,7 @@ func Euclidian(x1, x2 vector) float64 {
 }
 
 // distance apply a distanceFunction on two vectors
-func distance(x1 vector, x2 vector, f distanceFunction) (float64, error) {
+func distance(x1 Vector, x2 Vector, f DistanceFunction) (float64, error) {
 	if x1 == nil {
 		return -1, fmt.Errorf("x1 is nil")
 	}
