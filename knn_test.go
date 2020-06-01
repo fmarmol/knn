@@ -5,18 +5,18 @@ import "testing"
 func TestPredict(t *testing.T) {
 	tt := []struct {
 		name string
-		X    matrix
-		y    vector
+		X    Matrix
+		y    Vector
 		k    int
-		x    matrix
-		p    vector
+		x    Matrix
+		p    Vector
 	}{
 		{
-			X: matrix{vector{1, 2, 3}, vector{3, 2, 1}},
-			y: vector{1, 2},
+			X: Matrix{Vector{1, 2, 3}, Vector{3, 2, 1}},
+			y: Vector{1, 2},
 			k: 1,
-			x: matrix{vector{1, 2, 3}},
-			p: vector{1},
+			x: Matrix{Vector{1, 2, 3}},
+			p: Vector{1},
 		},
 	}
 	for _, tc := range tt {

@@ -120,7 +120,7 @@ func newKNN(k int, x Matrix, y Vector, d DistanceFunction) *base {
 }
 
 // NNeighbors returns the k nearests neighboors
-func (b *base) nearestNeighbors(x Vector) neighbors {
+func (b *base) NearestNeighbors(x Vector) neighbors {
 	ret := make(neighbors, len(b.X))
 	for i := range b.X {
 		d, err := distance(x, b.X[i], b.Distance)
